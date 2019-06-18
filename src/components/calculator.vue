@@ -1,8 +1,8 @@
 <template>
   <div class="container">
     <group title="月供(等额本息)">
-      <cell title="房贷" :value="loanPreMonth"></cell>
-      <cell title="借款" :value="lendPreMonth"></cell>
+      <cell title="房贷" :value="loanPreMonth + '元/月'"></cell>
+      <cell title="借款" :value="lendPreMonth + '元/月'"></cell>
     </group>
     <group title="设置">
       <cell title="房价" :inline-desc="housingPrice + '万'" primary="content">
@@ -68,7 +68,9 @@ export default {
       set: function(newValue) {
         var that = this;
         var housingPrice = parseInt(that.housingPrice);
-        that.downpayment = housingPrice - newValue;
+        var value = housingPrice - newValue;
+        that.downpayment = value;
+        console.log('loan set:', value)
       }
     },
     // 每月应还借款
@@ -78,7 +80,7 @@ export default {
       var lend = parseInt(that.lend);
       var lendTerm = parseInt(that.lendTerm);
       value = (lend * 10000) / (lendTerm * 12);
-      return value.toFixed(2) + '元/月';
+      return value.toFixed(2);
     },
     // 每月应还贷款
     loanPreMonth() {
@@ -87,7 +89,7 @@ export default {
       // var loanInterest = that.loanInterest;
       // var loanTerm = parseInt(that.loanTerm);
       // var value = (loan * 10000 + loanInterest) / loanTerm / 12;
-      // return value.toFixed(2) + '元/月';
+      // return value.toFixed(2);
 
       var that = this;
       var loan = parseInt(that.loan);
@@ -95,7 +97,7 @@ export default {
       var monthRate = parseFloat(that.loanRate) / 100 / 12;
       var pow = Math.pow(1 + monthRate, loanTerm * 12);
       var value = monthRate * pow / (pow - 1) * (loan * 10000); // https://baike.baidu.com/item/等额本息/3227456
-      return value.toFixed(2) + '元/月';
+      return value.toFixed(2);
     },
     // 贷款利息
     loanInterest() {
@@ -120,7 +122,7 @@ export default {
         totalInterest += interest;
         // console.log(i, loanPreMonth, payment, interest, loan);
       }
-      return totalInterest.toFixed(2) + '元';
+      return totalInterest.toFixed(2);
     }
   }
 };
