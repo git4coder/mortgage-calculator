@@ -70,7 +70,7 @@ export default {
         var housingPrice = parseInt(that.housingPrice);
         var value = housingPrice - newValue;
         that.downpayment = value;
-        console.log('loan set:', value)
+        // console.log('loan set:', value)
       }
     },
     // 每月应还借款
