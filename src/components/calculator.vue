@@ -1,12 +1,12 @@
 <template>
   <div class="container">
-    <group title="月供">
+    <group title="月供(等额本息)">
       <cell title="房贷" :value="loanPreMonth"></cell>
       <cell title="借款" :value="lendPreMonth"></cell>
     </group>
     <group title="设置">
       <cell title="房价" :inline-desc="housingPrice + '万'" primary="content">
-        <range v-model="housingPrice" :min="50" :max="150" :range-bar-height="rangeBarHeight"></range>
+        <range v-model="housingPrice" :min="0" :max="150" :range-bar-height="rangeBarHeight"></range>
       </cell>
       <cell title="首付" :inline-desc="downpayment + '万'" primary="content">
         <range v-model="downpayment" :range-bar-height="rangeBarHeight"></range>
@@ -14,14 +14,14 @@
       <cell title="贷款" :inline-desc="loan + '万'" primary="content">
         <range v-model="loan" :range-bar-height="rangeBarHeight"></range>
       </cell>
-      <cell title="年利率" :inline-desc="loanRate + '%'" primary="content">
-        <inline-x-number v-model="loanRate" :step="0.01" :min="0" :max="10"></inline-x-number>
+      <cell title="年利率" :inline-desc="loanRate + '%'" v-if="loan" primary="content">
+        <inline-x-number v-model="loanRate" :step="0.01" :min="0" :max="10" fillable></inline-x-number>
       </cell>
       <cell title="贷款时长" :inline-desc="loanTerm + '年'" v-if="loan" primary="content">
         <range v-model="loanTerm" :min="1" :max="30" :range-bar-height="rangeBarHeight"></range>
       </cell>
       <cell title="借款" :inline-desc="lend + '万'" primary="content">
-        <range v-model="lend" :range-bar-height="rangeBarHeight"></range>
+        <range v-model="lend" :range-bar-height="rangeBarHeight" :max="housingPrice"></range>
       </cell>
       <cell title="借款时长" :inline-desc="lendTerm + '年'" v-if="lend" primary="content">
         <range v-model="lendTerm" :min="1" :max="10" :range-bar-height="rangeBarHeight"></range>
@@ -59,7 +59,7 @@ export default {
   computed: {
     // 贷款
     loan: {
-      get: function(){
+      get: function() {
         var that = this;
         var housingPrice = parseInt(that.housingPrice);
         var downpayment = parseInt(that.downpayment);
@@ -82,22 +82,45 @@ export default {
     },
     // 每月应还贷款
     loanPreMonth() {
+      // var that = this;
+      // var loan = parseInt(that.loan);
+      // var loanInterest = that.loanInterest;
+      // var loanTerm = parseInt(that.loanTerm);
+      // var value = (loan * 10000 + loanInterest) / loanTerm / 12;
+      // return value.toFixed(2) + '元/月';
+
       var that = this;
       var loan = parseInt(that.loan);
-      var loanInterest = that.loanInterest;
       var loanTerm = parseInt(that.loanTerm);
-      var value = (loan * 10000 + loanInterest) / loanTerm / 12;
+      var monthRate = parseFloat(that.loanRate) / 100 / 12;
+      var pow = Math.pow(1 + monthRate, loanTerm * 12);
+      var value = monthRate * pow / (pow - 1) * (loan * 10000); // https://baike.baidu.com/item/等额本息/3227456
       return value.toFixed(2) + '元/月';
     },
     // 贷款利息
     loanInterest() {
+      // var that = this;
+      // var loan = parseInt(that.loan);
+      // var loanRate = parseFloat(that.loanRate);
+      // var loanTerm = parseInt(that.loanTerm);
+      // var value = loan * 10000 * loanRate / 100 * loanTerm;
+      // value = parseFloat(value.toFixed(2));
+      // return value;
+
       var that = this;
-      var loan = parseInt(that.loan);
-      var loanRate = parseFloat(that.loanRate);
-      var loanTerm = parseInt(that.loanTerm);
-      var value = loan * 10000 * loanRate / 100 * loanTerm;
-      value = parseFloat(value.toFixed(2));
-      return value;
+      var loan = parseInt(that.loan) * 10000;
+      var loanTerm = parseInt(that.loanTerm) * 12;
+      var loanRate = parseFloat(that.loanRate) / 100 / 12;
+      var loanPreMonth = parseFloat(that.loanPreMonth);
+      var totalInterest = 0;
+      for (let i = 1; i <= loanTerm; i++) {
+        var interest = loan * loanRate; // 本月利息
+        var payment = loanPreMonth - interest; // 本月本金
+        loan -= payment; // 剩余本金
+        totalInterest += interest;
+        // console.log(i, loanPreMonth, payment, interest, loan);
+      }
+      return totalInterest.toFixed(2) + '元';
     }
   }
 };
