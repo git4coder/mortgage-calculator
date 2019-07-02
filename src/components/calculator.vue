@@ -2,28 +2,28 @@
   <div class="container">
     <group title="月供(等额本息)">
       <cell title="房贷" :value="loanPreMonth + '元/月'"></cell>
-      <cell title="借款" :value="lendPreMonth + '元/月'"></cell>
+      <cell v-if="lend" title="借款" :value="lendPreMonth + '元/月'"></cell>
     </group>
     <group title="设置">
       <cell title="房价" :inline-desc="housingPrice + '万'" primary="content">
-        <range v-model="housingPrice" :min="0" :max="150" :range-bar-height="rangeBarHeight"></range>
+        <range v-model="housingPrice" :min="0" :max="1000" :range-bar-height="rangeBarHeight"></range>
       </cell>
-      <cell title="首付" :inline-desc="downpayment + '万'" primary="content">
-        <range v-model="downpayment" :range-bar-height="rangeBarHeight"></range>
+      <cell v-if="housingPrice" title="首付" :inline-desc="downpayment + '万'" primary="content">
+        <range v-model="downpayment" :max="1000" :range-bar-height="rangeBarHeight"></range>
       </cell>
-      <cell title="贷款" :inline-desc="loan + '万'" primary="content">
-        <range v-model="loan" :range-bar-height="rangeBarHeight"></range>
+      <cell v-if="housingPrice" title="贷款" :inline-desc="loan + '万'" primary="content">
+        <range v-model="loan" :max="1000" :range-bar-height="rangeBarHeight"></range>
       </cell>
-      <cell title="年利率" :inline-desc="loanRate + '%'" v-if="loan" primary="content">
+      <cell v-if="housingPrice && loan" title="年利率" :inline-desc="loanRate + '%'" primary="content">
         <inline-x-number v-model="loanRate" :step="0.01" :min="0" :max="10" fillable></inline-x-number>
       </cell>
-      <cell title="贷款时长" :inline-desc="loanTerm + '年'" v-if="loan" primary="content">
+      <cell v-if="housingPrice && loan" title="贷款时长" :inline-desc="loanTerm + '年'" primary="content">
         <range v-model="loanTerm" :min="1" :max="30" :range-bar-height="rangeBarHeight"></range>
       </cell>
-      <cell title="借款" :inline-desc="lend + '万'" primary="content">
+      <cell v-if="housingPrice" title="借款" :inline-desc="lend + '万'" primary="content">
         <range v-model="lend" :range-bar-height="rangeBarHeight" :max="housingPrice"></range>
       </cell>
-      <cell title="借款时长" :inline-desc="lendTerm + '年'" v-if="lend" primary="content">
+      <cell v-if="lend" title="借款时长" :inline-desc="lendTerm + '年'"  primary="content">
         <range v-model="lendTerm" :min="1" :max="10" :range-bar-height="rangeBarHeight"></range>
       </cell>
     </group>
@@ -47,12 +47,12 @@ export default {
   },
   data() {
     return {
-      housingPrice: 100, // 房价
-      loanTerm: 15, // 贷款年限
+      housingPrice: 500, // 房价
+      loanTerm: 20, // 贷款年限
       loanRate: 4.90, // 贷款利率
-      lend: 12, // 借
+      downpayment: 150, // 首付
+      lend: 0, // 借
       lendTerm: 5, // 借款年限
-      downpayment: 30, // 首付
       rangeBarHeight: 2
     };
   },
