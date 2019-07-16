@@ -6,25 +6,25 @@
     </group>
     <group title="设置">
       <cell title="房价" :inline-desc="housingPrice + '万'" primary="content">
-        <range v-model="housingPrice" :min="0" :max="1000" :range-bar-height="rangeBarHeight"></range>
+        <range :step="1" v-model="housingPrice" :min="0" :max="200" :range-bar-height="rangeBarHeight"></range>
       </cell>
       <cell v-if="housingPrice" title="首付" :inline-desc="downpayment + '万'" primary="content">
-        <range v-model="downpayment" :max="1000" :range-bar-height="rangeBarHeight"></range>
+        <range :step="1" v-model="downpayment" :max="housingPrice" :range-bar-height="rangeBarHeight"></range>
       </cell>
       <cell v-if="housingPrice" title="贷款" :inline-desc="loan + '万'" primary="content">
-        <range v-model="loan" :max="1000" :range-bar-height="rangeBarHeight"></range>
+        <range :step="1" v-model="loan" :max="housingPrice" :range-bar-height="rangeBarHeight"></range>
       </cell>
       <cell v-if="housingPrice && loan" title="年利率" :inline-desc="loanRate + '%'" primary="content">
-        <inline-x-number v-model="loanRate" :step="0.01" :min="0" :max="10" fillable></inline-x-number>
+        <inline-x-number :step="0.1" v-model="loanRate" :min="0" :max="10" fillable></inline-x-number>
       </cell>
       <cell v-if="housingPrice && loan" title="贷款时长" :inline-desc="loanTerm + '年'" primary="content">
-        <range v-model="loanTerm" :min="1" :max="30" :range-bar-height="rangeBarHeight"></range>
+        <range :step="1" v-model="loanTerm" :min="1" :max="30" :range-bar-height="rangeBarHeight"></range>
       </cell>
       <cell v-if="housingPrice" title="借款" :inline-desc="lend + '万'" primary="content">
-        <range v-model="lend" :range-bar-height="rangeBarHeight" :max="housingPrice"></range>
+        <range :step="1" v-model="lend" :range-bar-height="rangeBarHeight" :max="housingPrice"></range>
       </cell>
       <cell v-if="lend" title="借款时长" :inline-desc="lendTerm + '年'"  primary="content">
-        <range v-model="lendTerm" :min="1" :max="10" :range-bar-height="rangeBarHeight"></range>
+        <range :step="1" v-model="lendTerm" :min="1" :max="10" :range-bar-height="rangeBarHeight"></range>
       </cell>
     </group>
     <group title="其它">
@@ -47,7 +47,7 @@ export default {
   },
   data() {
     return {
-      housingPrice: 500, // 房价
+      housingPrice: 100, // 房价
       loanTerm: 20, // 贷款年限
       loanRate: 4.90, // 贷款利率
       downpayment: 150, // 首付
