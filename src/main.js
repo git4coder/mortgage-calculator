@@ -3,10 +3,12 @@
 import Vue from 'vue'
 import FastClick from 'fastclick'
 import VueRouter from 'vue-router'
+import VCharts from 'v-charts'
 import App from './App'
 import Home from './components/calculator'
 
 Vue.use(VueRouter)
+Vue.use(VCharts);
 
 const routes = [{
   path: '/',
